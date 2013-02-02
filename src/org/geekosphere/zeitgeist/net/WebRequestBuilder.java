@@ -11,8 +11,7 @@ import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
 public class WebRequestBuilder {
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(WebRequestBuilder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestBuilder.class);
 
 	private WebRequest wr;
 	public static final String URL = "http://zeitgeist.li/";
@@ -26,29 +25,29 @@ public class WebRequestBuilder {
 	}
 
 	public WebRequestBuilder before(int before) {
-		URL url = addParameterToUrl(wr.getUrl(),"before",String.valueOf(before));
+		String url = addParameterToUrl(wr.getUrl(), "before", String.valueOf(before));
 		wr.setUrl(url);
 		return this;
 	}
 
 	public WebRequestBuilder after(int after) {
-		URL url = addParameterToUrl(wr.getUrl(),"after",String.valueOf(after));
+		String url = addParameterToUrl(wr.getUrl(), "after", String.valueOf(after));
 		wr.setUrl(url);
 		return this;
 	}
 
 	public WebRequestBuilder page(int page) {
-		URL url = addParameterToUrl(wr.getUrl(),"page",String.valueOf(page));
+		String url = addParameterToUrl(wr.getUrl(), "page", String.valueOf(page));
 		wr.setUrl(url);
 		return this;
 	}
 
 	public WebRequestBuilder withId(int id) {
-		URL url = appendPath(wr.getUrl(), String.valueOf(id));
+		String url = appendPath(wr.getUrl(), String.valueOf(id));
 		wr.setUrl(url);
 		return this;
 	}
-	
+
 	public WebRequest build() {
 		return wr;
 	}
@@ -59,22 +58,22 @@ public class WebRequestBuilder {
 		return wr;
 	}
 
-	private URL appendPath(URL url, String path) {
+	private String appendPath(URL url, String path) {
 		Uri u = Uri.parse(url.toString());
-		u.buildUpon().appendEncodedPath(path).build();
+		u = u.buildUpon().appendEncodedPath(path).build();
 		try {
-			return new URL(u.toString());
+			return u.toString();
 		} catch (Throwable tr) {
 			LOGGER.error("Unable to create URL", tr);
 			return null;
 		}
 	}
-	
-	private URL addParameterToUrl(URL url, String key, String value) {
+
+	private String addParameterToUrl(URL url, String key, String value) {
 		Uri u = Uri.parse(url.toString());
-		u.buildUpon().appendQueryParameter(key, value).build();
+		u = u.buildUpon().appendQueryParameter(key, value).build();
 		try {
-			return new URL(u.toString());
+			return u.toString();
 		} catch (Throwable tr) {
 			LOGGER.error("Unable to create URL", tr);
 			return null;

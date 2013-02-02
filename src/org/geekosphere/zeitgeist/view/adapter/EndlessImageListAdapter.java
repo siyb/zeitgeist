@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
+import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.ImageProcessor;
@@ -54,15 +55,17 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		page++;
 		WebRequestBuilder wrb = new WebRequestBuilder();
 		WebRequest wr = wrb.getItems().page(page).build();
-		LOGGER.error("Getting page " + page);
+		LOGGER.error("Getting page " + page + " " + wr.getUrl());
 		ZGItem[] items = (ZGItem[]) assister.runSynchronousWebRequest(wr, new ZGItemProcessor());
 		ArrayList<Bitmap> ret = new ArrayList<Bitmap>(items.length);
 		for (ZGItem item : items) {
 			if (item.getType() == ZGItemType.IMAGE) {
+				LOGGER.error("ITEM --> " +item);
 				String url = "http://zeitgeist.li" + item.getRelativeThumbnailPath();
 				WebRequest imageWr = new WebRequest();
 				imageWr.setUrl(url);
 				imageWr.setProcessorId(ImageProcessor.ID);
+				imageWr.setCacheTime(CacheInformation.CACHE_7D);
 				ret.add((Bitmap) assister.runSynchronousWebRequest(imageWr, new ImageProcessor()));
 			}
 		}
