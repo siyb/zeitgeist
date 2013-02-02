@@ -2,6 +2,7 @@ package org.geekosphere.zeitgeist.net;
 
 import java.net.URL;
 
+import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ public class WebRequestBuilder {
 		wr = createDefaultWebRequest();
 		wr.setUrl(URL);
 		wr.setRequestType(Type.GET);
+		wr.setProcessorId(ZGItemProcessor.ID);
 		return this;
 	}
 
@@ -45,6 +47,10 @@ public class WebRequestBuilder {
 		URL url = appendPath(wr.getUrl(), String.valueOf(id));
 		wr.setUrl(url);
 		return this;
+	}
+	
+	public WebRequest build() {
+		return wr;
 	}
 
 	private WebRequest createDefaultWebRequest() {
