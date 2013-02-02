@@ -39,7 +39,7 @@ public class ZGItemProcessor extends JSONProcessor<ZGItem[]> {
 					if (o.has("image")) {
 						JSONObject image = o.getJSONObject("image");
 						items[i].setRelativeImagePath(image.getString("image"));
-						items[i].setRelativeThumbnail(image.getString("thumbnail"));
+						items[i].setRelativeThumbnailPath(image.getString("thumbnail"));
 					}
 				}
 

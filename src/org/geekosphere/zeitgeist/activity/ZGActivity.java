@@ -1,5 +1,6 @@
 package org.geekosphere.zeitgeist.activity;
 
+import org.geekosphere.zeitgeist.R;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
@@ -21,22 +22,8 @@ public class ZGActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		WebRequestBuilder wrb = new WebRequestBuilder();
-		HttpServiceAssister assister = new HttpServiceAssister(this);
-		assister.bindService();
-		assister.runWebRequest(new TestHandler(), wrb.getItems().build(), new ZGItemProcessor());
+		setContentView(R.layout.zgactivity);
 	}
 
-	private static final class TestHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
-			if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
-				for (ZGItem o : (ZGItem[]) msg.obj) {
-					LOGGER.error(o.toString());
-				}
-			} else {
-				LOGGER.error("Error: ", (Throwable) msg.getData().getSerializable(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_THROWABLE));
-			}
-		}
-	}
+
 }

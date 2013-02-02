@@ -21,7 +21,7 @@ public class ZGItem {
 	private int noOfUpvotes;
 	private ArrayList<ZGTag> tags;
 	private String relativeImagePath;
-	private String relativeThumbnail;
+	private String relativeThumbnailPath;
 	private Date date;
 
 	public int getId() {
@@ -128,12 +128,12 @@ public class ZGItem {
 		this.relativeImagePath = relativeImagePath;
 	}
 
-	public String getRelativeThumbnail() {
-		return relativeThumbnail;
+	public String getRelativeThumbnailPath() {
+		return relativeThumbnailPath;
 	}
 
-	public void setRelativeThumbnail(String relativeThumbnail) {
-		this.relativeThumbnail = relativeThumbnail;
+	public void setRelativeThumbnailPath(String relativeThumbnailPath) {
+		this.relativeThumbnailPath = relativeThumbnailPath;
 	}
 
 	public Date getDate() {
@@ -149,7 +149,7 @@ public class ZGItem {
 		return "ZGItem [id=" + id + ", type=" + type + ", source=" + source + ", title=" + title + ", nsfw=" + nsfw + ", sizeInBytes="
 				+ sizeInBytes + ", mimeType=" + mimeType + ", checkSum=" + checkSum + ", width=" + width + ", height=" + height
 				+ ", noOfUpvotes=" + noOfUpvotes + ", tags=" + tags + ", relativeImagePath=" + relativeImagePath + ", relativeThumbnail="
-				+ relativeThumbnail + ", date=" + date + "]";
+				+ relativeThumbnailPath + ", date=" + date + "]";
 	}
 
 }
