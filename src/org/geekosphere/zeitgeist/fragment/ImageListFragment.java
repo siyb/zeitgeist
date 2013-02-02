@@ -7,9 +7,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.commonsware.cwac.endless.EndlessAdapter;
 
 public class ImageListFragment extends SherlockListFragment {
 	@Override
@@ -17,11 +18,9 @@ public class ImageListFragment extends SherlockListFragment {
 		super.onCreate(savedInstanceState);
 		setListAdapter(new EndlessImageListAdapter(getActivity()));
 	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.imagelistfragment, container, false);
 
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.imagelistfragment, container, false);
 	}
 }
