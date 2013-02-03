@@ -1,8 +1,8 @@
 package org.geekosphere.zeitgeist.view.adapter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import org.geekosphere.zeitgeist.R;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.data.ZGItem.ZGItemType;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -29,7 +29,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EndlessImageListAdapter.class);
 
 	private HttpServiceAssister assister;
-	private int page = -1;
+	private int page = 0;
 	private Bitmap[] cachedItems;
 
 	public EndlessImageListAdapter(Context context) {
@@ -55,12 +55,13 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		page++;
 		WebRequestBuilder wrb = new WebRequestBuilder();
 		WebRequest wr = wrb.getItems().page(page).build();
-		LOGGER.error("Getting page " + page + " " + wr.getUrl());
+		LOGGER.info("Getting page " + page + " " + wr.getUrl());
 		ZGItem[] items = (ZGItem[]) assister.runSynchronousWebRequest(wr, new ZGItemProcessor());
+		LOGGER.info(items.length + " items per page!");
 		ArrayList<Bitmap> ret = new ArrayList<Bitmap>(items.length);
 		for (ZGItem item : items) {
 			if (item.getType() == ZGItemType.IMAGE) {
-				LOGGER.error("ITEM --> " +item);
+				LOGGER.debug("ITEM --> " + item);
 				String url = "http://zeitgeist.li" + item.getRelativeThumbnailPath();
 				WebRequest imageWr = new WebRequest();
 				imageWr.setUrl(url);
@@ -74,12 +75,21 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected void appendCachedData() {
+		Bitmap[] toAppend = new Bitmap[5];
+		int i = 0;
 		for (Bitmap b : cachedItems) {
-			((ZGAdapter) getWrappedAdapter()).add(b);
+			if (i == 4) {
+				i = 0;
+				toAppend = new Bitmap[5];
+				((ZGAdapter) getWrappedAdapter()).add(toAppend);
+			} else {
+				toAppend[i] = b;
+				i++;
+			}
 		}
 	}
 
-	private static final class ZGAdapter extends ArrayAdapter<Bitmap> {
+	private static final class ZGAdapter extends ArrayAdapter<Bitmap[]> {
 
 		public ZGAdapter(Context context) {
 			super(context, -1);
@@ -87,12 +97,28 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			ImageView iv = new ImageView(getContext());
-			convertView = iv;
-			iv.setScaleType(ScaleType.CENTER_INSIDE);
-
-			iv.setImageBitmap(getItem(position));
+			if (convertView == null) {
+				convertView = LayoutInflater.from(getContext()).inflate(R.layout.imagelistitem, parent, false);
+				ViewHolder vh = new ViewHolder();
+				vh.img1 = (ImageView) convertView.findViewById(R.id.imagelistitem_1);
+				vh.img2 = (ImageView) convertView.findViewById(R.id.imagelistitem_2);
+				vh.img3 = (ImageView) convertView.findViewById(R.id.imagelistitem_3);
+				vh.img4 = (ImageView) convertView.findViewById(R.id.imagelistitem_4);
+				vh.img5 = (ImageView) convertView.findViewById(R.id.imagelistitem_5);
+				convertView.setTag(vh);
+			}
+			ViewHolder holder = (ViewHolder) convertView.getTag();
+			Bitmap[] items = getItem(position);
+			holder.img1.setImageBitmap(items[0]);
+			holder.img2.setImageBitmap(items[1]);
+			holder.img3.setImageBitmap(items[2]);
+			holder.img4.setImageBitmap(items[3]);
+			holder.img5.setImageBitmap(items[4]);
 			return convertView;
 		}
+	}
+
+	private static final class ViewHolder {
+		ImageView img1, img2, img3, img4, img5;
 	}
 }
