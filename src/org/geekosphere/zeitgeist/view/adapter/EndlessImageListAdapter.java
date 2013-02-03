@@ -76,7 +76,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		Bitmap[] toAppend = new Bitmap[5];
 		int i = 0;
 		for (Bitmap b : cachedItems) {
-			if (i == 4) {
+			if (i == 5) {
 				i = 0;
 				toAppend = new Bitmap[5];
 				((ZGAdapter) getWrappedAdapter()).add(toAppend);
