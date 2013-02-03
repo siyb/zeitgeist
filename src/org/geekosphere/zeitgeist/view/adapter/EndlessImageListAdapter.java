@@ -60,15 +60,13 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		LOGGER.info(items.length + " items per page!");
 		ArrayList<Bitmap> ret = new ArrayList<Bitmap>(items.length);
 		for (ZGItem item : items) {
-			if (item.getType() == ZGItemType.IMAGE) {
-				LOGGER.debug("ITEM --> " + item);
-				String url = "http://zeitgeist.li" + item.getRelativeThumbnailPath();
-				WebRequest imageWr = new WebRequest();
-				imageWr.setUrl(url);
-				imageWr.setProcessorId(ImageProcessor.ID);
-				imageWr.setCacheTime(CacheInformation.CACHE_7D);
-				ret.add((Bitmap) assister.runSynchronousWebRequest(imageWr, new ImageProcessor()));
-			}
+			LOGGER.debug("ITEM --> " + item);
+			String url = "http://zeitgeist.li" + item.getRelativeThumbnailPath();
+			WebRequest imageWr = new WebRequest();
+			imageWr.setUrl(url);
+			imageWr.setProcessorId(ImageProcessor.ID);
+			imageWr.setCacheTime(CacheInformation.CACHE_7D);
+			ret.add((Bitmap) assister.runSynchronousWebRequest(imageWr, new ImageProcessor()));
 		}
 		return ret.toArray(new Bitmap[ret.size()]);
 	}
