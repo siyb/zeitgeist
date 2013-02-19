@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.geekosphere.zeitgeist.R;
 import org.geekosphere.zeitgeist.data.ZGItem;
-import org.geekosphere.zeitgeist.data.ZGItem.ZGItemType;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.slf4j.Logger;
@@ -20,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
+import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
 import at.diamonddogs.service.net.HttpServiceAssister;
 import at.diamonddogs.service.processor.ImageProcessor;
 
@@ -56,7 +56,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		WebRequestBuilder wrb = new WebRequestBuilder();
 		WebRequest wr = wrb.getItems().page(page).build();
 		LOGGER.info("Getting page " + page + " " + wr.getUrl());
-		ZGItem[] items = (ZGItem[]) assister.runSynchronousWebRequest(wr, new ZGItemProcessor());
+		ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor())).getPayload();
 		LOGGER.info(items.length + " items per page!");
 		ArrayList<Bitmap> ret = new ArrayList<Bitmap>(items.length);
 		for (ZGItem item : items) {
@@ -66,7 +66,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			imageWr.setUrl(url);
 			imageWr.setProcessorId(ImageProcessor.ID);
 			imageWr.setCacheTime(CacheInformation.CACHE_7D);
-			ret.add((Bitmap) assister.runSynchronousWebRequest(imageWr, new ImageProcessor()));
+			ret.add((Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload());
 		}
 		return ret.toArray(new Bitmap[ret.size()]);
 	}
