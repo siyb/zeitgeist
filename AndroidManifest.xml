@@ -4,7 +4,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="17" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -20,10 +20,10 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
+        </activity><activity android:name=".activity.ZGPreferenceActivity" />
         <service android:name="at.diamonddogs.service.net.HttpService"></service>
         <service android:name="at.diamonddogs.service.CacheService"></service>
-        <provider android:name="at.diamonddogs.contentprovider.CacheContentProvider" android:authorities="org.geekosphere.zeitgeist.contentprovider.CacheContentProvider"/>
+        <provider android:exported="false" android:name="at.diamonddogs.contentprovider.CacheContentProvider" android:authorities="org.geekosphere.zeitgeist.contentprovider.CacheContentProvider"/>
     </application>
 
 </manifest>
