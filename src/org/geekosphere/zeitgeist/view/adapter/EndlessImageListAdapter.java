@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
@@ -40,9 +40,9 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected View getPendingView(ViewGroup parent) {
-		TextView tv = new TextView(getContext());
-		tv.setText("WAIT...");
-		return tv;
+		ProgressBar pb = new ProgressBar(getContext());
+		pb.setIndeterminate(true);
+		return pb;
 	}
 
 	@Override
