@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
+import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,16 +64,23 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		wr = wrb.getItems().withId(currentItem.get()).build();
 
 		LOGGER.info("Getting thumbnail (info url):" + wr.getUrl());
-		ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor())).getPayload();
+		ZGItem item = (ZGItem) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGSingleItemProcessor()))
+		        .getPayload();
 		currentItem.decrementAndGet();
-		String url = "http://zeitgeist.li" + items[0].getRelativeThumbnailPath();
-		LOGGER.info("Getting thumbnail: " + url);
-		// TODO: put in WebRequestBuilder
-		WebRequest imageWr = new WebRequest();
-		imageWr.setUrl(url);
-		imageWr.setProcessorId(ImageProcessor.ID);
-		imageWr.setCacheTime(CacheInformation.CACHE_7D);
-		return (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
+		String thumbNail = item.getRelativeThumbnailPath();
+		if (thumbNail != null) {
+			String url = "http://zeitgeist.li" + thumbNail;
+			LOGGER.info("Getting thumbnail: " + url);
+			// TODO: put in WebRequestBuilder
+			WebRequest imageWr = new WebRequest();
+			imageWr.setUrl(url);
+			imageWr.setProcessorId(ImageProcessor.ID);
+			imageWr.setCacheTime(CacheInformation.CACHE_7D);
+			return (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
+		} else {
+			return getNextItem();
+		}
+
 	}
 
 	@Override
