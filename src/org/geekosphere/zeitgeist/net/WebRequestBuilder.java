@@ -2,12 +2,15 @@ package org.geekosphere.zeitgeist.net;
 
 import java.net.URL;
 
+import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.content.Context;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
@@ -15,7 +18,11 @@ public class WebRequestBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestBuilder.class);
 
 	private WebRequest wr;
-	public static final String URL = "http://zeitgeist.li/";
+	private String URL;
+
+	public WebRequestBuilder(Context c) {
+		URL = PreferenceManager.getDefaultSharedPreferences(c).getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+	}
 
 	public WebRequestBuilder getItems() {
 		wr = createDefaultWebRequest();

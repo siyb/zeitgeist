@@ -52,7 +52,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	private Bitmap getNextItem() {
-		WebRequestBuilder wrb = new WebRequestBuilder();
+		WebRequestBuilder wrb = new WebRequestBuilder(getContext());
 		WebRequest wr;
 		if (currentItem.get() == -1) {
 			wr = wrb.getItems().page(1).build();

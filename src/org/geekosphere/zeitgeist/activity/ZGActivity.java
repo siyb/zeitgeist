@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -17,13 +19,13 @@ public class ZGActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initializeDefaultSettings();
 		setContentView(R.layout.zgactivity);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.mainmenu, menu);
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -37,4 +39,18 @@ public class ZGActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void initializeDefaultSettings() {
+		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+		if (p.getBoolean(ZGPreferenceActivity.KEY_INITIALIZED, false)) {
+			return;
+		}
+		LOGGER.info("Initializing default settings");
+		// @formatter:off
+		p
+			.edit()
+				.putBoolean(ZGPreferenceActivity.KEY_INITIALIZED, true)
+				.putString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li/")
+			.commit();
+		// @formatter:on
+	}
 }
