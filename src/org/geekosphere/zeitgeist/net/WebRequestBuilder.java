@@ -3,6 +3,7 @@ package org.geekosphere.zeitgeist.net;
 import java.net.URL;
 
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
+import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ public class WebRequestBuilder {
 	public WebRequestBuilder withId(int id) {
 		String url = appendPath(wr.getUrl(), String.valueOf(id));
 		wr.setUrl(url);
+		wr.setProcessorId(ZGSingleItemProcessor.ID);
 		return this;
 	}
 
