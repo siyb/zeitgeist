@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -62,6 +63,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			currentItem.set(items[0].getId());
 		}
 		wr = wrb.getItems().withId(currentItem.get()).build();
+		wr.setCacheTime(CacheInformation.CACHE_FOREVER);
 
 		LOGGER.info("Getting thumbnail (info url):" + wr.getUrl());
 		ZGItem item = (ZGItem) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGSingleItemProcessor()))
@@ -75,7 +77,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			WebRequest imageWr = new WebRequest();
 			imageWr.setUrl(url);
 			imageWr.setProcessorId(ImageProcessor.ID);
-			imageWr.setCacheTime(CacheInformation.CACHE_7D);
+			imageWr.setCacheTime(CacheInformation.CACHE_FOREVER);
 			return (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
 		} else {
 			return getNextItem();
@@ -98,6 +100,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
 				convertView = new ImageView(getContext());
+				((ImageView) convertView).setScaleType(ScaleType.CENTER_INSIDE);
 			}
 			Bitmap item = getItem(position);
 			ImageView imageView = (ImageView) convertView;
