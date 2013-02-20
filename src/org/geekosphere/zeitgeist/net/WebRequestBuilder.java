@@ -52,6 +52,10 @@ public class WebRequestBuilder {
 		return wr;
 	}
 
+	public void reset() {
+		wr = null;
+	}
+
 	private WebRequest createDefaultWebRequest() {
 		WebRequest wr = new WebRequest();
 		wr.addHeaderField("Accept", "application/json");
