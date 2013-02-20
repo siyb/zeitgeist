@@ -7,20 +7,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
+import android.widget.GridView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragment;
 
-public class ImageListFragment extends SherlockListFragment {
+public class ImageListFragment extends SherlockFragment {
+	private GridView grid;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setListAdapter(new EndlessImageListAdapter(getActivity()));
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.imagelistfragment, container, false);
+		View v = inflater.inflate(R.layout.imagelistfragment, container, false);
+		grid = (GridView) v.findViewById(R.id.imagelistfragment_gv_grid);
+		grid.setAdapter(new EndlessImageListAdapter(getActivity()));
+		return v;
 	}
 }
