@@ -25,6 +25,7 @@ public class ZGItemProcessor extends JSONProcessor<ZGItem[]> {
 	protected ZGItem[] parse(JSONObject inputObject) {
 		ZGItem[] items = null;
 		try {
+			LOGGER.debug("Reply: " + inputObject.toString());
 			JSONArray jsonItems = inputObject.getJSONArray("items");
 			LOGGER.info("Number of items to parse: " + jsonItems.length());
 			items = new ZGItem[jsonItems.length()];
