@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StackView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/showroomfragment_sv_gallery"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/zg_grey" />
