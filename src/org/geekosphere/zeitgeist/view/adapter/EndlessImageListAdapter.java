@@ -30,11 +30,19 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	private HttpServiceAssister assister;
 	private Bitmap cachedItem;
+	private boolean thumbnail = true;
 
 	private final AtomicInteger currentItem = new AtomicInteger(-1);
 
 	public EndlessImageListAdapter(Context context) {
 		super(context, new ZGAdapter(context), -1);
+		assister = new HttpServiceAssister(context);
+		assister.bindService();
+	}
+
+	public EndlessImageListAdapter(Context context, boolean thumbnail) {
+		super(context, new ZGAdapter(context), -1);
+		this.thumbnail = thumbnail;
 		assister = new HttpServiceAssister(context);
 		assister.bindService();
 	}
@@ -69,10 +77,16 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		ZGItem item = (ZGItem) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGSingleItemProcessor()))
 		        .getPayload();
 		currentItem.decrementAndGet();
-		String thumbNail = item.getRelativeThumbnailPath();
-		if (thumbNail != null) {
-			String url = "http://zeitgeist.li" + thumbNail;
-			LOGGER.info("Getting thumbnail: " + url);
+		String imageUrl;
+		if (thumbnail) {
+			imageUrl = item.getRelativeThumbnailPath();
+		} else {
+			imageUrl = item.getRelativeImagePath();
+		}
+		if (imageUrl != null) {
+			String url = "http://zeitgeist.li" + imageUrl;
+
+			LOGGER.info("Getting Image: " + url + " thumb? " + thumbnail);
 			// TODO: put in WebRequestBuilder
 			WebRequest imageWr = new WebRequest();
 			imageWr.setUrl(url);
