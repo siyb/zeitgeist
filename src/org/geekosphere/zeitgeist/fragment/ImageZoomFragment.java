@@ -22,6 +22,7 @@ public class ImageZoomFragment extends SherlockDialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setStyle(STYLE_NO_TITLE, 0);
 		assister = new HttpServiceAssister(getActivity());
 	}
 
@@ -46,9 +47,11 @@ public class ImageZoomFragment extends SherlockDialogFragment {
 	}
 
 	private void loadImage() {
-		String imageUrl = "http://zeitgeist.li" + item.getRelativeImagePath();
-		WebRequest wr = ImageProcessor.getDefaultImageRequest(imageUrl);
-		assister.runWebRequest(new ImageProcessor.ImageProcessHandler(imageView, imageUrl), wr, new ImageProcessor());
+		if (isResumed()) {
+			String imageUrl = "http://zeitgeist.li" + item.getRelativeImagePath();
+			WebRequest wr = ImageProcessor.getDefaultImageRequest(imageUrl);
+			assister.runWebRequest(new ImageProcessor.ImageProcessHandler(imageView, imageUrl), wr, new ImageProcessor());
+		}
 	}
 
 	public void setItem(ZGItem item) {
