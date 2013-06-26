@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class ZGItem {
 	public enum ZGItemType {
-		IMAGE, AUDIO, VIDEO;
+		IMAGE, AUDIO, VIDEO, LINK;
 	}
 
 	private int id;
