@@ -2,6 +2,7 @@ package org.geekosphere.zeitgeist.view.adapter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.geekosphere.zeitgeist.activity.ZGActivity;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
@@ -10,14 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-import android.widget.ProgressBar;
 import at.diamonddogs.data.dataobjects.CacheInformation;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.service.net.HttpService.WebRequestReturnContainer;
@@ -50,13 +52,13 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected View getPendingView(ViewGroup parent) {
-		ProgressBar pb = new ProgressBar(getContext());
-		pb.setIndeterminate(true);
-		return pb;
+		// return dummy view
+		return new View(getContext());
 	}
 
 	@Override
 	protected boolean cacheInBackground() throws Exception {
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING));
 		cachedItem = getNextItem();
 		return cachedItem != null;
 	}
@@ -106,6 +108,8 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	@Override
 	protected void appendCachedData() {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING_DONE));
+
 	}
 
 	public Pair<ZGItem, Bitmap> getZGItem(int position) {
