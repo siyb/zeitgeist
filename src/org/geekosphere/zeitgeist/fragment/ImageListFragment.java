@@ -34,7 +34,7 @@ public class ImageListFragment extends SherlockFragment implements OnItemClickLi
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-		ZGItem item = adapter.getZGItem(position);
+		ZGItem item = adapter.getZGItem(position).first;
 		ImageZoomFragment imageZoomFragment = new ImageZoomFragment();
 		imageZoomFragment.setItem(item);
 		imageZoomFragment.show(getActivity().getSupportFragmentManager(), "");

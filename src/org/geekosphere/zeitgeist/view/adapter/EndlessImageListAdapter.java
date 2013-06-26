@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -29,7 +30,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EndlessImageListAdapter.class);
 
 	private HttpServiceAssister assister;
-	private Bitmap cachedItem;
+	private Pair<ZGItem, Bitmap> cachedItem;
 	private boolean thumbnail = true;
 
 	private final AtomicInteger currentItem = new AtomicInteger(-1);
@@ -60,7 +61,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		return cachedItem != null;
 	}
 
-	private Bitmap getNextItem() {
+	private Pair<ZGItem, Bitmap> getNextItem() {
 		WebRequestBuilder wrb = new WebRequestBuilder(getContext());
 		WebRequest wr;
 		if (currentItem.get() == -1) {
@@ -92,7 +93,10 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			imageWr.setUrl(url);
 			imageWr.setProcessorId(ImageProcessor.ID);
 			imageWr.setCacheTime(CacheInformation.CACHE_FOREVER);
-			return (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
+			Bitmap b = (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
+			Pair<ZGItem, Bitmap> returnPair = new Pair<ZGItem, Bitmap>(item, b);
+
+			return returnPair;
 		} else {
 			return getNextItem();
 		}
@@ -104,11 +108,11 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
 	}
 
-	public ZGItem getZGItem(int position) {
-		return (ZGItem) getWrappedAdapter().getItem(position);
+	public Pair<ZGItem, Bitmap> getZGItem(int position) {
+		return (Pair<ZGItem, Bitmap>) getWrappedAdapter().getItem(position);
 	}
 
-	private static final class ZGAdapter extends ArrayAdapter<Bitmap> {
+	private static final class ZGAdapter extends ArrayAdapter<Pair<ZGItem, Bitmap>> {
 
 		public ZGAdapter(Context context) {
 			super(context, -1);
@@ -120,9 +124,9 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 				convertView = new ImageView(getContext());
 				((ImageView) convertView).setScaleType(ScaleType.CENTER_INSIDE);
 			}
-			Bitmap item = getItem(position);
+			Pair<ZGItem, Bitmap> item = getItem(position);
 			ImageView imageView = (ImageView) convertView;
-			imageView.setImageBitmap(item);
+			imageView.setImageBitmap(item.second);
 			return convertView;
 		}
 	}
