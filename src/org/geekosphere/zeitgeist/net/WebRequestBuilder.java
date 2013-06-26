@@ -1,7 +1,11 @@
 package org.geekosphere.zeitgeist.net;
 
+import java.io.File;
 import java.net.URL;
 
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
@@ -22,6 +26,60 @@ public class WebRequestBuilder {
 
 	public WebRequestBuilder(Context c) {
 		URL = PreferenceManager.getDefaultSharedPreferences(c).getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+	}
+
+	public WebRequestBuilder newItem() {
+		wr = createDefaultWebRequest();
+		wr.setUrl(URL);
+		wr.setRequestType(Type.POST);
+		wr.setProcessorId(ZGItemProcessor.ID);
+		return this;
+	}
+
+	public void addUploadUrl(String[] urls) {
+		MultipartEntity entity = getMultiPartEntity();
+		for (String url : urls) {
+			try {
+				entity.addPart("remote_url[]", new StringBody(url));
+			} catch (Throwable tr) {
+				LOGGER.warn("Cannot announce", tr);
+			}
+		}
+	}
+
+	public void addUploadFile(File[] files) {
+		MultipartEntity entity = getMultiPartEntity();
+		for (File file : files) {
+			entity.addPart("image_upload[]", new FileBody(file));
+		}
+		wr.setHttpEntity(entity);
+	}
+
+	public void addTags(String tags) {
+		MultipartEntity entity = getMultiPartEntity();
+		try {
+			entity.addPart("tags", new StringBody(tags));
+		} catch (Throwable tr) {
+			LOGGER.warn("Cannot announce", tr);
+		}
+	}
+
+	public void announce() {
+		MultipartEntity entity = getMultiPartEntity();
+		try {
+			entity.addPart("announce", new StringBody("true"));
+		} catch (Throwable tr) {
+			LOGGER.warn("Cannot announce", tr);
+		}
+	}
+
+	private MultipartEntity getMultiPartEntity() {
+		MultipartEntity m = (MultipartEntity) wr.getHttpEntity();
+		if (m == null) {
+			m = new MultipartEntity();
+			wr.setHttpEntity(m);
+		}
+		return m;
 	}
 
 	public WebRequestBuilder getItems() {
