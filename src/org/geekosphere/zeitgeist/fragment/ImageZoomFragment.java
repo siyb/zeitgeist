@@ -1,9 +1,12 @@
 package org.geekosphere.zeitgeist.fragment;
 
 import org.geekosphere.zeitgeist.R;
+import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.data.ZGItem;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +51,8 @@ public class ImageZoomFragment extends SherlockDialogFragment {
 
 	private void loadImage() {
 		if (isResumed()) {
-			String imageUrl = "http://zeitgeist.li" + item.getRelativeImagePath();
+			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getActivity());
+			String imageUrl = p.getString(ZGPreferenceActivity.KEY_HOST, "") + item.getRelativeImagePath();
 			WebRequest wr = ImageProcessor.getDefaultImageRequest(imageUrl);
 			assister.runWebRequest(new ImageProcessor.ImageProcessHandler(imageView, imageUrl), wr, new ImageProcessor());
 		}

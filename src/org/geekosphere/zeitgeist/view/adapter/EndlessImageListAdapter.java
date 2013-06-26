@@ -3,6 +3,7 @@ package org.geekosphere.zeitgeist.view.adapter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.geekosphere.zeitgeist.activity.ZGActivity;
+import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.view.View;
@@ -87,7 +90,8 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			imageUrl = item.getRelativeImagePath();
 		}
 		if (imageUrl != null) {
-			String url = "http://zeitgeist.li" + imageUrl;
+			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+			String url = p.getString(ZGPreferenceActivity.KEY_HOST, "") + imageUrl;
 
 			LOGGER.info("Getting Image: " + url + " thumb? " + thumbnail);
 			// TODO: put in WebRequestBuilder
