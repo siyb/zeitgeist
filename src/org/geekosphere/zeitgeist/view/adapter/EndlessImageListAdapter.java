@@ -67,7 +67,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			wr = wrb.getItems().page(1).build();
 			wrb.reset();
 			ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor()))
-			        .getPayload();
+					.getPayload();
 			currentItem.set(items[0].getId());
 		}
 		wr = wrb.getItems().withId(currentItem.get()).build();
@@ -75,7 +75,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 		LOGGER.info("Getting thumbnail (info url):" + wr.getUrl());
 		ZGItem item = (ZGItem) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGSingleItemProcessor()))
-		        .getPayload();
+				.getPayload();
 		currentItem.decrementAndGet();
 		String imageUrl;
 		if (thumbnail) {
@@ -102,6 +102,10 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	@Override
 	protected void appendCachedData() {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
+	}
+
+	public ZGItem getZGItem(int position) {
+		return (ZGItem) getWrappedAdapter().getItem(position);
 	}
 
 	private static final class ZGAdapter extends ArrayAdapter<Bitmap> {
