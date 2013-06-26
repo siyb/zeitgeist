@@ -1,3 +1,5 @@
+lint.xml
+build.gradle
 # built application files
 *.apk
 *.ap_
