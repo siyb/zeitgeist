@@ -36,7 +36,7 @@ public class WebRequestBuilder {
 		return this;
 	}
 
-	public void addUploadUrl(String[] urls) {
+	public WebRequestBuilder addUploadUrl(String[] urls) {
 		MultipartEntity entity = getMultiPartEntity();
 		for (String url : urls) {
 			try {
@@ -45,32 +45,38 @@ public class WebRequestBuilder {
 				LOGGER.warn("Cannot announce", tr);
 			}
 		}
+		return this;
+
 	}
 
-	public void addUploadFile(File[] files) {
+	public WebRequestBuilder addUploadFile(File[] files) {
 		MultipartEntity entity = getMultiPartEntity();
 		for (File file : files) {
 			entity.addPart("image_upload[]", new FileBody(file));
 		}
 		wr.setHttpEntity(entity);
+		return this;
+
 	}
 
-	public void addTags(String tags) {
+	public WebRequestBuilder addTags(String tags) {
 		MultipartEntity entity = getMultiPartEntity();
 		try {
 			entity.addPart("tags", new StringBody(tags));
 		} catch (Throwable tr) {
 			LOGGER.warn("Cannot announce", tr);
 		}
+		return this;
 	}
 
-	public void announce() {
+	public WebRequestBuilder announce() {
 		MultipartEntity entity = getMultiPartEntity();
 		try {
 			entity.addPart("announce", new StringBody("true"));
 		} catch (Throwable tr) {
 			LOGGER.warn("Cannot announce", tr);
 		}
+		return this;
 	}
 
 	private MultipartEntity getMultiPartEntity() {
