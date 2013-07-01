@@ -49,12 +49,7 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 		View v = inflater.inflate(R.layout.fileuploadfragment, container, false);
 		image = (ImageView) v.findViewById(R.id.fileuploadfragment_iv_preview);
 		v.findViewById(R.id.fileuploadfragment_b_upload).setOnClickListener(this);
-		Intent i = getActivity().getIntent();
-		imageUri = (Uri) i.getParcelableExtra(Intent.EXTRA_STREAM);
-		LOGGER.info("Data URI: " + imageUri);
-
 		image.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		image.setImageBitmap(getScaledBitmap());
 		return v;
 	}
 
@@ -68,6 +63,17 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	public void onResume() {
 		super.onResume();
 		assister.bindService();
+		setUriFromIntent();
+	}
+
+	private void setUriFromIntent() {
+		Intent i = getActivity().getIntent();
+		imageUri = (Uri) i.getParcelableExtra(Intent.EXTRA_STREAM);
+		if (imageUri == null) {
+			imageUri = i.getData();
+		}
+		LOGGER.info("Data URI: " + imageUri);
+		image.setImageBitmap(getScaledBitmap());
 	}
 
 	@Override
@@ -80,10 +86,14 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	public void onClick(View v) {
 		WebRequestBuilder b = new WebRequestBuilder(getActivity());
 		WebRequest wr = b.newItem().addUploadFile(new File[] { new File(getRealPathFromURI(imageUri)) }).build();
+		wr.setReadTimeout(10000);
+		wr.setConnectionTimeout(5000);
 		assister.runWebRequest(new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				if (msg.what == ZGItemProcessor.ID) {
+					// TODO: 500 - error
+					int statusCode = msg.getData().getInt(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE);
 					if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {
 						getActivity().finish();
 					} else {

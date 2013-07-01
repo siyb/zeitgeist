@@ -6,5 +6,8 @@
     <string name="mainmenu_settings">Settings</string>
     <string name="fileuploadfragment_uploadpicture">Upload Picture</string>
     <string name="fileuploadfragment_erroruploading">Error uploading</string>
+    <string name="mainmenu_upload">Upload</string>
+    <string name="zgactivity_couldnothandle">Could not find an App to handle the request</string>
+    <string name="zgactivity_selectimage">Select an image to upload</string>
 
 </resources>
