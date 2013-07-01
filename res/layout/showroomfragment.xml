@@ -3,6 +3,5 @@
     android:id="@+id/showroomfragment_sv_gallery"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/zg_grey" 
-    android:loopViews="false"
-    />
+    android:background="@color/zg_grey"
+    android:loopViews="false" />

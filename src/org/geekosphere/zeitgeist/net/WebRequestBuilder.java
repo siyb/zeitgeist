@@ -30,7 +30,7 @@ public class WebRequestBuilder {
 
 	public WebRequestBuilder newItem() {
 		wr = createDefaultWebRequest();
-		wr.setUrl(URL);
+		wr.setUrl(URL + "/new");
 		wr.setRequestType(Type.POST);
 		wr.setProcessorId(ZGItemProcessor.ID);
 		return this;

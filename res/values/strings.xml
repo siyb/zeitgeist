@@ -4,5 +4,6 @@
     <string name="settingspreferencedialog_title_address">Address</string>
     <string name="settingspreferencedialog_summary_address">The address of your Zeitgeist installation. Something like http://zeitgeist.li/</string>
     <string name="mainmenu_settings">Settings</string>
+    <string name="fileuploadfragment_uploadpicture">Upload Picture</string>
 
 </resources>
