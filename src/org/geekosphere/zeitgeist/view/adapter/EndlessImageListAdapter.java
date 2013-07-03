@@ -1,13 +1,16 @@
 package org.geekosphere.zeitgeist.view.adapter;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.geekosphere.zeitgeist.R;
 import org.geekosphere.zeitgeist.activity.ZGActivity;
 import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
-import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +41,9 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	private Pair<ZGItem, Bitmap> cachedItem;
 	private boolean thumbnail = true;
 
-	private final AtomicInteger currentItem = new AtomicInteger(-1);
+	private final AtomicInteger currentPage = new AtomicInteger(1);
+	private final AtomicInteger listPointer = new AtomicInteger(0);
+	private List<ZGItem> zgItems;
 
 	public EndlessImageListAdapter(Context context) {
 		super(context, new ZGAdapter(context), -1);
@@ -56,7 +61,9 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	@Override
 	protected View getPendingView(ViewGroup parent) {
 		// return dummy view
-		return new View(getContext());
+		ImageView v = new ImageView(getContext());
+		v.setImageResource(R.drawable.app_icon);
+		return v;
 	}
 
 	@Override
@@ -67,22 +74,21 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	private Pair<ZGItem, Bitmap> getNextItem() {
-		WebRequestBuilder wrb = new WebRequestBuilder(getContext());
-		WebRequest wr;
-		if (currentItem.get() == -1) {
-			wr = wrb.getItems().page(1).build();
-			wrb.reset();
+
+		if (zgItems == null || listPointer.get() == (zgItems.size() - 1)) {
+			WebRequestBuilder wrb = new WebRequestBuilder(getContext());
+			listPointer.set(0);
+			WebRequest wr;
+			LOGGER.info("getNextItem: Getting items for page " + currentPage);
+			wr = wrb.getItems().page(currentPage.getAndIncrement()).build();
 			ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor()))
 					.getPayload();
-			currentItem.set(items[0].getId());
+			zgItems = Collections.synchronizedList(Arrays.asList(items));
+			LOGGER.info("getNextItem: got " + zgItems.size());
 		}
-		wr = wrb.getItems().withId(currentItem.get()).build();
-		wr.setCacheTime(CacheInformation.CACHE_FOREVER);
 
-		LOGGER.info("Getting thumbnail (info url):" + wr.getUrl());
-		ZGItem item = (ZGItem) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGSingleItemProcessor()))
-				.getPayload();
-		currentItem.decrementAndGet();
+		ZGItem item = zgItems.get(listPointer.getAndIncrement());
+		LOGGER.info("getNextItem: using imageurl of " + item.getId());
 		String imageUrl;
 		if (thumbnail) {
 			imageUrl = item.getRelativeThumbnailPath();
