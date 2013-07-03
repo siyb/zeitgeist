@@ -9,6 +9,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.geekosphere.zeitgeist.processor.ZGSingleItemProcessor;
+import org.geekosphere.zeitgeist.processor.ZGTagProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,14 @@ public class WebRequestBuilder {
 
 	public WebRequestBuilder(Context c) {
 		URL = PreferenceManager.getDefaultSharedPreferences(c).getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+	}
+
+	public WebRequestBuilder getTags() {
+		wr = createDefaultWebRequest();
+		wr.setUrl(URL + "/list/tags");
+		wr.setRequestType(Type.GET);
+		wr.setProcessorId(ZGTagProcessor.ID);
+		return this;
 	}
 
 	public WebRequestBuilder newItem() {
