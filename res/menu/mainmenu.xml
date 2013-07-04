@@ -2,6 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/mainmenu_search"
+        android:actionViewClass="com.actionbarsherlock.widget.SearchView"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always|collapseActionView"
+        android:title="@string/mainmenu_search"/>
+    <item
         android:id="@+id/mainmenu_settings"
         android:title="@string/mainmenu_settings"/>
     <item

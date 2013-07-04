@@ -14,11 +14,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
+import at.diamonddogs.service.net.HttpServiceAssister;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.SearchView;
 
 public class ZGActivity extends SherlockFragmentActivity {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ZGActivity.class);
@@ -29,6 +31,7 @@ public class ZGActivity extends SherlockFragmentActivity {
 	public static final int ACTIVITY_REQUEST_UPLOADFILE = 0;
 
 	private LoadingBroadcastReceiver loadingBroadcastReceiver;
+	private HttpServiceAssister assister;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +40,15 @@ public class ZGActivity extends SherlockFragmentActivity {
 		setSupportProgressBarIndeterminateVisibility(false);
 		initializeDefaultSettings();
 		setContentView(R.layout.zgactivity);
+		assister = new HttpServiceAssister(this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.mainmenu, menu);
+		MenuItem searchItem = menu.findItem(R.id.mainmenu_search);
+		SearchView s = (SearchView) searchItem.getActionView();
+		// new ZGTagQueryTextListener(this, s, assister);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -86,6 +93,13 @@ public class ZGActivity extends SherlockFragmentActivity {
 				new IntentFilter(INTENT_ACTION_LOADING));
 		LocalBroadcastManager.getInstance(this).registerReceiver(loadingBroadcastReceiver = new LoadingBroadcastReceiver(),
 				new IntentFilter(INTENT_ACTION_LOADING_DONE));
+		assister.bindService();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		assister.unbindService();
 	}
 
 	private void initializeDefaultSettings() {

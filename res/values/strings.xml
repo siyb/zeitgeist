@@ -9,5 +9,6 @@
     <string name="mainmenu_upload">Upload</string>
     <string name="zgactivity_couldnothandle">Could not find an App to handle the request</string>
     <string name="zgactivity_selectimage">Select an image to upload</string>
+    <string name="mainmenu_search">Search</string>
 
 </resources>
