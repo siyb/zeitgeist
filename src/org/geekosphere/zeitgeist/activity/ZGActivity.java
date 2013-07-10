@@ -48,7 +48,7 @@ public class ZGActivity extends SherlockFragmentActivity {
 		getSupportMenuInflater().inflate(R.menu.mainmenu, menu);
 		MenuItem searchItem = menu.findItem(R.id.mainmenu_search);
 		SearchView s = (SearchView) searchItem.getActionView();
-		// new ZGTagQueryTextListener(this, s, assister);
+		new ZGTagQueryTextListener(this, s, assister);
 		return super.onCreateOptionsMenu(menu);
 	}
 
