@@ -7,5 +7,4 @@
     android:horizontalSpacing="0dp"
     android:numColumns="5"
     android:verticalSpacing="0dp" >
-
 </GridView>

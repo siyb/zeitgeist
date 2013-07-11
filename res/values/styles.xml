@@ -20,7 +20,7 @@
     <style name="TagSuggestions">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:background">@android:color/darker_gray</item>
+        <item name="android:background">@color/zg_grey</item>
         <item name="android:padding">5dip</item>
     </style>
 

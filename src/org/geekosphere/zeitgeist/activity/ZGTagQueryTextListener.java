@@ -20,6 +20,7 @@ import at.diamonddogs.service.net.HttpServiceAssister;
 
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
+import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
 
 public class ZGTagQueryTextListener implements OnQueryTextListener {
 	private Context context;
@@ -40,6 +41,22 @@ public class ZGTagQueryTextListener implements OnQueryTextListener {
 			}
 		});
 		sv.setSuggestionsAdapter(adapter);
+		sv.setOnSuggestionListener(new OnSuggestionListener() {
+
+			@Override
+			public boolean onSuggestionSelect(int position) {
+				return false;
+			}
+
+			@Override
+			public boolean onSuggestionClick(int position) {
+				Cursor c = ((Cursor) adapter.getItem(position));
+				String tagPressed = c.getString(c.getColumnIndexOrThrow("tag"));
+				WebRequestBuilder wrb = new WebRequestBuilder(context);
+				wrb.getItemsByTag(tagPressed).page(0).build();
+				return false;
+			}
+		});
 	}
 
 	private void loadTags() {

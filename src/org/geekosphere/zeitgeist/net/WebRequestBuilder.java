@@ -19,6 +19,9 @@ import android.preference.PreferenceManager;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.data.dataobjects.WebRequest.Type;
 
+/**
+ * TODO: add some sort of validation
+ */
 public class WebRequestBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestBuilder.class);
 
@@ -27,6 +30,22 @@ public class WebRequestBuilder {
 
 	public WebRequestBuilder(Context c) {
 		URL = PreferenceManager.getDefaultSharedPreferences(c).getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+	}
+
+	public WebRequestBuilder getItems() {
+		wr = createDefaultWebRequest();
+		wr.setUrl(URL);
+		wr.setRequestType(Type.GET);
+		wr.setProcessorId(ZGItemProcessor.ID);
+		return this;
+	}
+
+	public WebRequestBuilder getItemsByTag(String tag) {
+		wr = createDefaultWebRequest();
+		wr.setUrl(URL + "/show/tag/" + tag);
+		wr.setRequestType(Type.GET);
+		wr.setProcessorId(ZGItemProcessor.ID);
+		return this;
 	}
 
 	public WebRequestBuilder getTags() {
@@ -95,14 +114,6 @@ public class WebRequestBuilder {
 			wr.setHttpEntity(m);
 		}
 		return m;
-	}
-
-	public WebRequestBuilder getItems() {
-		wr = createDefaultWebRequest();
-		wr.setUrl(URL);
-		wr.setRequestType(Type.GET);
-		wr.setProcessorId(ZGItemProcessor.ID);
-		return this;
 	}
 
 	public WebRequestBuilder before(int before) {
