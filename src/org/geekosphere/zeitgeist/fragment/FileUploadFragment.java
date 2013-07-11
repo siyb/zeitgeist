@@ -73,7 +73,14 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 			imageUri = i.getData();
 		}
 		LOGGER.info("Data URI: " + imageUri);
-		image.setImageBitmap(getScaledBitmap());
+		if (imageUri != null) {
+			image.setImageBitmap(getScaledBitmap());
+		} else {
+			Toast.makeText(getActivity(), R.string.fileuploadfragment_noimagedata, Toast.LENGTH_SHORT).show();
+			if (!isDetached()) {
+				getActivity().finish();
+			}
+		}
 	}
 
 	@Override
