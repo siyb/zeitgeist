@@ -1,5 +1,10 @@
 package org.geekosphere.zeitgeist.activity;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.geekosphere.zeitgeist.data.ZGTag;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGTagProcessor;
@@ -58,8 +63,16 @@ public class ZGTagQueryTextListener implements OnQueryTextListener {
 
 	private Cursor createCursorFromQuery(String query) {
 		MatrixCursor mx = new MatrixCursor(new String[] { "_id", "count", "tag" });
+
 		if (tags != null) {
-			for (ZGTag tag : tags) {
+			List<ZGTag> tagList = Arrays.asList(tags);
+			Collections.sort(tagList, new Comparator<ZGTag>() {
+				@Override
+				public int compare(ZGTag lhs, ZGTag rhs) {
+					return lhs.getTagName().compareTo(rhs.getTagName());
+				}
+			});
+			for (ZGTag tag : tagList) {
 				if (tag.getTagName().contains(query)) {
 					mx.addRow(new String[] { String.valueOf(tag.getId()), String.valueOf(tag.getItemCount()), tag.getTagName() });
 				}
