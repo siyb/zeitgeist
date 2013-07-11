@@ -20,7 +20,7 @@ public class ZGTagProcessor extends JSONProcessor<ZGTag[]> {
 		try {
 			ZGTag tmp;
 			JSONArray array = inputObject.getJSONArray("tags");
-			for (int i = 0; i < inputObject.length(); i++) {
+			for (int i = 0; i < array.length(); i++) {
 				tmp = new ZGTag();
 				JSONObject o = (JSONObject) array.get(i);
 				tmp.setId(o.getInt("id"));

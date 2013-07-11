@@ -19,14 +19,12 @@ import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 public class ZGTagQueryTextListener implements OnQueryTextListener {
 	private Context context;
 	private HttpServiceAssister assister;
-	private SearchView sv;
 	private TagSuggestionAdapter adapter;
 	private ZGTag[] tags;
 
 	public ZGTagQueryTextListener(Context c, SearchView sv, HttpServiceAssister assister) {
 		this.context = c;
 		this.assister = assister;
-		this.sv = sv;
 		loadTags();
 		sv.setOnQueryTextListener(this);
 		adapter = new TagSuggestionAdapter(context, createCursorFromQuery(""));
