@@ -3,8 +3,11 @@
     android:id="@+id/imagelistfragment_gv_grid"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:adjustViewBounds="true"
     android:background="@color/zg_grey"
     android:horizontalSpacing="0dp"
     android:numColumns="5"
-    android:verticalSpacing="0dp" >
+    android:verticalSpacing="0dp"
+    android:stretchMode="spacingWidth" >
+
 </GridView>

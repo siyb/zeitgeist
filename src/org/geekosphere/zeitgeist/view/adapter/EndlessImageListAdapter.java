@@ -44,6 +44,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	private final AtomicInteger currentPage = new AtomicInteger(1);
 	private final AtomicInteger listPointer = new AtomicInteger(0);
 	private List<ZGItem> zgItems;
+	private ImageView placeHolderView;
 
 	public EndlessImageListAdapter(Context context) {
 		super(context, new ZGAdapter(context), -1);
@@ -60,10 +61,13 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected View getPendingView(ViewGroup parent) {
-		// return dummy view
-		ImageView v = new ImageView(getContext());
-		v.setImageResource(R.drawable.app_icon);
-		return v;
+		if (placeHolderView == null) {
+			placeHolderView = new ImageView(getContext());
+			placeHolderView.setImageResource(R.drawable.app_icon);
+			placeHolderView.setScaleType(ScaleType.CENTER_INSIDE);
+			placeHolderView.setBackgroundResource(R.drawable.general_grey_background);
+		}
+		return placeHolderView;
 	}
 
 	@Override
@@ -80,6 +84,8 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			listPointer.set(0);
 			WebRequest wr;
 			LOGGER.info("getNextItem: Getting items for page " + currentPage);
+			// TODO: use a factory to alternate between this request and the
+			// request required by tag search
 			wr = wrb.getItems().page(currentPage.getAndIncrement()).build();
 			ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor()))
 					.getPayload();

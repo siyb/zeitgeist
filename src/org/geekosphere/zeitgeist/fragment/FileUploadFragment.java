@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import at.diamonddogs.data.dataobjects.WebRequest;
 import at.diamonddogs.service.net.HttpServiceAssister;
+import at.diamonddogs.service.processor.ImageProcessor;
 import at.diamonddogs.service.processor.ServiceProcessor;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -53,12 +54,6 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 		return v;
 	}
 
-	private Bitmap getScaledBitmap() {
-		Bitmap src = BitmapFactory.decodeFile(getRealPathFromURI(imageUri));
-		int scaledHight = (int) (src.getHeight() * (SCALEFACTOR / src.getWidth()));
-		return Bitmap.createScaledBitmap(src, (int) SCALEFACTOR, scaledHight, true);
-	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -67,20 +62,71 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	}
 
 	private void setUriFromIntent() {
-		Intent i = getActivity().getIntent();
-		imageUri = (Uri) i.getParcelableExtra(Intent.EXTRA_STREAM);
-		if (imageUri == null) {
-			imageUri = i.getData();
-		}
-		LOGGER.info("Data URI: " + imageUri);
-		if (imageUri != null) {
-			image.setImageBitmap(getScaledBitmap());
-		} else {
-			Toast.makeText(getActivity(), R.string.fileuploadfragment_noimagedata, Toast.LENGTH_SHORT).show();
-			if (!isDetached()) {
-				getActivity().finish();
+
+		new Thread() {
+			@Override
+			public void run() {
+				Intent i = getActivity().getIntent();
+				imageUri = (Uri) i.getParcelableExtra(Intent.EXTRA_STREAM);
+				if (imageUri == null) {
+					imageUri = i.getData();
+				}
+				if (imageUri == null) {
+					if (i.hasExtra("android.intent.extra.TEXT")) {
+						imageUri = Uri.parse(i.getStringExtra("android.intent.extra.TEXT"));
+					} else if (i.hasExtra("android.intent.extra.SUBJECT")) {
+						imageUri = Uri.parse(i.getStringExtra("android.intent.extra.SUBJECT"));
+					}
+				}
+				LOGGER.info("Data URI: " + imageUri);
+				if (imageUri != null) {
+					if (imageUri.getScheme().contains("http")) {
+						downloadImage(imageUri);
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								image.setImageBitmap(getScaledBitmapFromFile(ImageProcessor.getImageFileUrl(imageUri.toString(),
+										getActivity())));
+							}
+						});
+					} else {
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								image.setImageBitmap(getScaledBitmapFromLocalUri());
+							}
+						});
+					}
+				} else {
+					Toast.makeText(getActivity(), R.string.fileuploadfragment_noimagedata, Toast.LENGTH_SHORT).show();
+					if (!isDetached()) {
+						getActivity().finish();
+					}
+				}
 			}
-		}
+		}.start();
+
+	}
+
+	private void downloadImage(Uri u) {
+		String url = u.toString();
+		WebRequest wr = ImageProcessor.getDefaultImageRequest(url);
+		assister.runSynchronousWebRequest(wr, new ImageProcessor());
+	}
+
+	private Bitmap getScaledBitmapFromFile(String filePath) {
+		Bitmap src = BitmapFactory.decodeFile(filePath);
+		return scaleImage(src);
+	}
+
+	private Bitmap getScaledBitmapFromLocalUri() {
+		Bitmap src = BitmapFactory.decodeFile(getRealPathFromURI(imageUri));
+		return scaleImage(src);
+	}
+
+	private Bitmap scaleImage(Bitmap src) {
+		int scaledHight = (int) (src.getHeight() * (SCALEFACTOR / src.getWidth()));
+		return Bitmap.createScaledBitmap(src, (int) SCALEFACTOR, scaledHight, true);
 	}
 
 	@Override
@@ -112,11 +158,15 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	}
 
 	private String getRealPathFromURI(Uri contentUri) {
-		String[] proj = { MediaStore.Images.Media.DATA };
-		CursorLoader loader = new CursorLoader(getActivity(), contentUri, proj, null, null, null);
-		Cursor cursor = loader.loadInBackground();
-		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		cursor.moveToFirst();
-		return cursor.getString(column_index);
+		if (imageUri.getScheme().contains("http")) {
+			return ImageProcessor.getImageFileUrl(imageUri.toString(), getActivity());
+		} else {
+			String[] proj = { MediaStore.Images.Media.DATA };
+			CursorLoader loader = new CursorLoader(getActivity(), contentUri, proj, null, null, null);
+			Cursor cursor = loader.loadInBackground();
+			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			cursor.moveToFirst();
+			return cursor.getString(column_index);
+		}
 	}
 }

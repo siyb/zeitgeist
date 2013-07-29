@@ -9,6 +9,8 @@ import org.geekosphere.zeitgeist.data.ZGTag;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGTagProcessor;
 import org.geekosphere.zeitgeist.view.adapter.TagSuggestionAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -23,6 +25,7 @@ import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
 
 public class ZGTagQueryTextListener implements OnQueryTextListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZGTagQueryTextListener.class);
 	private Context context;
 	private HttpServiceAssister assister;
 	private TagSuggestionAdapter adapter;
@@ -60,10 +63,14 @@ public class ZGTagQueryTextListener implements OnQueryTextListener {
 	}
 
 	private void loadTags() {
-		WebRequestBuilder b = new WebRequestBuilder(context);
-		WebRequest wr = b.getTags().build();
-		wr.setCacheTime(CacheInformation.CACHE_1H);
-		tags = (ZGTag[]) assister.runSynchronousWebRequest(wr, new ZGTagProcessor()).getPayload();
+		try {
+			WebRequestBuilder b = new WebRequestBuilder(context);
+			WebRequest wr = b.getTags().build();
+			wr.setCacheTime(CacheInformation.CACHE_1H);
+			tags = (ZGTag[]) assister.runSynchronousWebRequest(wr, new ZGTagProcessor()).getPayload();
+		} catch (Throwable tr) {
+			LOGGER.info("Error while running runSynchronousWebRequest");
+		}
 	}
 
 	@Override
