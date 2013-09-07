@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -132,20 +133,24 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	private static final class ZGAdapter extends ArrayAdapter<Pair<ZGItem, Bitmap>> {
+		private LayoutInflater inflater;
 
 		public ZGAdapter(Context context) {
 			super(context, -1);
+			inflater = LayoutInflater.from(context);
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
-				convertView = new ImageView(getContext());
-				((ImageView) convertView).setScaleType(ScaleType.CENTER_INSIDE);
+				convertView = inflater.inflate(R.layout.list_item_endlessimagelistadapter, parent, false);
+				ImageView iv = (ImageView) convertView.findViewById(R.id.list_item_endlessimagelistadapter_iv_image);
+				iv.setScaleType(ScaleType.CENTER_INSIDE);
+				convertView.setTag(iv);
 			}
+			ImageView iv = (ImageView) convertView.getTag();
 			Pair<ZGItem, Bitmap> item = getItem(position);
-			ImageView imageView = (ImageView) convertView;
-			imageView.setImageBitmap(item.second);
+			iv.setImageBitmap(item.second);
 			return convertView;
 		}
 	}

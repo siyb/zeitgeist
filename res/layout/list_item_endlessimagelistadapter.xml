@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_endlessimagelistadapter_iv_image"
+    android:layout_width="wrap_content"
+    android:layout_margin="0dip"
+    android:padding="0dip"
+    android:layout_height="wrap_content" >
+
+</ImageView>
