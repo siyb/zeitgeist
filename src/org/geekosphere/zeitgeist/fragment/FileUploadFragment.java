@@ -8,11 +8,13 @@ import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,12 +47,14 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 		assister = new HttpServiceAssister(getActivity());
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fileuploadfragment, container, false);
 		image = (ImageView) v.findViewById(R.id.fileuploadfragment_iv_preview);
 		v.findViewById(R.id.fileuploadfragment_b_upload).setOnClickListener(this);
-		image.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			image.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		return v;
 	}
 
