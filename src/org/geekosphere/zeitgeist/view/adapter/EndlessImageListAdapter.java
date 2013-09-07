@@ -77,6 +77,12 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		return cachedItem != null;
 	}
 
+	@Override
+	protected void appendCachedData() {
+		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING_DONE));
+	}
+
 	private Pair<ZGItem, Bitmap> getNextItem() {
 
 		if (zgItems == null || listPointer.get() == (zgItems.size() - 1)) {
@@ -118,13 +124,6 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 		} else {
 			return getNextItem();
 		}
-
-	}
-
-	@Override
-	protected void appendCachedData() {
-		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING_DONE));
 
 	}
 
