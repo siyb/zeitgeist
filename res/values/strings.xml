@@ -3,6 +3,12 @@
     <string name="app_name">Zeitgeist</string>
     <string name="settingspreferencedialog_title_address">Address</string>
     <string name="settingspreferencedialog_summary_address">The address of your Zeitgeist installation. Something like http://zeitgeist.li/</string>
+    <string name="settingspreferencedialog_title_email">eMail</string>
+    <string name="settingspreferencedialog_summary_email">Optional eMail for authentication</string>
+    <string name="settingspreferencedialog_title_api_secret">API Secret</string>
+    <string name="settingspreferencedialog_summary_api_secret">Optional secret for authentication</string>
+    <string name="settingspreferencedialog_title_scan_api_secret">Scan for API Secret</string>
+    <string name="settingspreferencedialog_summary_scan_api_secret">Scan QR Code to set URL, eMail and API Secret</string>
     <string name="mainmenu_settings">Settings</string>
     <string name="fileuploadfragment_uploadpicture">Upload Picture</string>
     <string name="fileuploadfragment_erroruploading">Error uploading</string>
@@ -11,5 +17,6 @@
     <string name="zgactivity_selectimage">Select an image to upload</string>
     <string name="mainmenu_search">Search</string>
     <string name="fileuploadfragment_noimagedata">Image could not be shared, no data available!</string>
+    
 
 </resources>

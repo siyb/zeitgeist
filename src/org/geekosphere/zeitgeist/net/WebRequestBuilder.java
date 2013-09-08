@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import at.diamonddogs.data.dataobjects.WebRequest;
@@ -27,9 +28,14 @@ public class WebRequestBuilder {
 
 	private WebRequest wr;
 	private String URL;
+	private String email;
+	private String apiSecret;
 
 	public WebRequestBuilder(Context c) {
-		URL = PreferenceManager.getDefaultSharedPreferences(c).getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(c);
+		URL = preferences.getString(ZGPreferenceActivity.KEY_HOST, "http://zeitgeist.li");
+		email = preferences.getString(ZGPreferenceActivity.KEY_EMAIL, null);
+		apiSecret = preferences.getString(ZGPreferenceActivity.KEY_API_SECRET, null);
 	}
 
 	public WebRequestBuilder getItems() {
@@ -152,6 +158,10 @@ public class WebRequestBuilder {
 	private WebRequest createDefaultWebRequest() {
 		WebRequest wr = new WebRequest();
 		wr.addHeaderField("Accept", "application/json");
+		
+		if (email != null && apiSecret != null && email.length() > 0 && apiSecret.length() > 0) {
+			wr.addHeaderField("X-API-Auth", this.email + "|" + this.apiSecret);
+		}
 		return wr;
 	}
 
