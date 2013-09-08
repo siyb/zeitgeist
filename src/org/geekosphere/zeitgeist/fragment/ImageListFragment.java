@@ -1,7 +1,6 @@
 package org.geekosphere.zeitgeist.fragment;
 
 import org.geekosphere.zeitgeist.R;
-import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.view.adapter.EndlessImageListAdapter;
 
 import android.os.Bundle;
@@ -40,9 +39,8 @@ public class ImageListFragment extends SherlockFragment implements OnItemClickLi
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-		ZGItem item = adapter.getZGItem(position).first;
 		ImageZoomFragment imageZoomFragment = new ImageZoomFragment();
-		imageZoomFragment.setItem(item);
+		imageZoomFragment.setAdapter(getActivity(), adapter);
 		imageZoomFragment.show(getActivity().getSupportFragmentManager(), "");
 	}
 

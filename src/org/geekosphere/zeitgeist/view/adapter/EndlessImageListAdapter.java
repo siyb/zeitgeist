@@ -40,11 +40,11 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	private HttpServiceAssister assister;
 	private Pair<ZGItem, Bitmap> cachedItem;
-	private boolean thumbnail = true;
+	protected boolean thumbnail = true;
 
-	private final AtomicInteger currentPage = new AtomicInteger(1);
-	private final AtomicInteger listPointer = new AtomicInteger(0);
-	private List<ZGItem> zgItems;
+	protected final AtomicInteger currentPage = new AtomicInteger(1);
+	protected final AtomicInteger listPointer = new AtomicInteger(0);
+	protected List<ZGItem> zgItems;
 	private ImageView placeHolderView;
 
 	public EndlessImageListAdapter(Context context) {
@@ -54,10 +54,15 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	public EndlessImageListAdapter(Context context, boolean thumbnail) {
-		super(context, new ZGAdapter(context), -1);
+		this(context);
 		this.thumbnail = thumbnail;
-		assister = new HttpServiceAssister(context);
-		assister.bindService();
+	}
+
+	public EndlessImageListAdapter(Context context, EndlessImageListAdapter adapter) {
+		this(context, false);
+		this.currentPage.set(adapter.currentPage.get());
+		this.listPointer.set(adapter.listPointer.get());
+		this.zgItems = adapter.zgItems;
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			placeHolderView = new ImageView(getContext());
 			placeHolderView.setImageResource(R.drawable.app_icon);
 			placeHolderView.setScaleType(ScaleType.CENTER_INSIDE);
-			placeHolderView.setBackgroundResource(R.drawable.general_grey_background);
+			placeHolderView.setBackgroundResource(android.R.color.transparent);
 		}
 		return placeHolderView;
 	}
@@ -85,20 +90,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	private Pair<ZGItem, Bitmap> getNextItem() {
-
-		if (zgItems == null || listPointer.get() == (zgItems.size() - 1)) {
-			WebRequestBuilder wrb = new WebRequestBuilder(getContext());
-			listPointer.set(0);
-			WebRequest wr;
-			LOGGER.info("getNextItem: Getting items for page " + currentPage);
-			// TODO: use a factory to alternate between this request and the
-			// request required by tag search
-			wr = wrb.getItems().page(currentPage.getAndIncrement()).build();
-			ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor()))
-					.getPayload();
-			zgItems = Collections.synchronizedList(Arrays.asList(items));
-			LOGGER.info("getNextItem: got " + zgItems.size());
-		}
+		populateZGItemsIfNecessary();
 
 		ZGItem item = zgItems.get(listPointer.getAndIncrement());
 		LOGGER.info("getNextItem: using imageurl of " + item.getId());
@@ -126,6 +118,22 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			return getNextItem();
 		}
 
+	}
+
+	private void populateZGItemsIfNecessary() {
+		if (zgItems == null || listPointer.get() == (zgItems.size() - 1)) {
+			WebRequestBuilder wrb = new WebRequestBuilder(getContext());
+			listPointer.set(0);
+			WebRequest wr;
+			LOGGER.info("getNextItem: Getting items for page " + currentPage);
+			// TODO: use a factory to alternate between this request and the
+			// request required by tag search
+			wr = wrb.getItems().page(currentPage.getAndIncrement()).build();
+			ZGItem[] items = (ZGItem[]) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(wr, new ZGItemProcessor()))
+					.getPayload();
+			zgItems = Collections.synchronizedList(Arrays.asList(items));
+			LOGGER.info("getNextItem: got " + zgItems.size());
+		}
 	}
 
 	public Pair<ZGItem, Bitmap> getZGItem(int position) {

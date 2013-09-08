@@ -1,64 +1,56 @@
 package org.geekosphere.zeitgeist.fragment;
 
 import org.geekosphere.zeitgeist.R;
-import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
-import org.geekosphere.zeitgeist.data.ZGItem;
+import org.geekosphere.zeitgeist.view.adapter.EndlessImageListAdapter;
 
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import at.diamonddogs.data.dataobjects.WebRequest;
-import at.diamonddogs.service.net.HttpServiceAssister;
-import at.diamonddogs.service.processor.ImageProcessor;
+import android.widget.AdapterViewFlipper;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
-public class ImageZoomFragment extends SherlockDialogFragment {
-	private ZGItem item;
-	private HttpServiceAssister assister;
-	private ImageView imageView;
+@SuppressLint("ValidFragment")
+public class ImageZoomFragment extends SherlockDialogFragment implements OnClickListener {
+	private AdapterViewFlipper imageViewFlipper;
+	private EndlessImageListAdapter adapter;
+
+	public ImageZoomFragment() {
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setStyle(STYLE_NO_TITLE, 0);
-		assister = new HttpServiceAssister(getActivity());
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.imagezoomfragment, container, false);
-		imageView = (ImageView) v.findViewById(R.id.imagezoomfragment_iv_display);
+		imageViewFlipper = (AdapterViewFlipper) v.findViewById(R.id.imagezoomfragment_avf_viewflipper);
+		imageViewFlipper.setAdapter(adapter);
+		v.findViewById(R.id.imagezoomfragment_iv_next).setOnClickListener(this);
+		v.findViewById(R.id.imagezoomfragment_iv_prev).setOnClickListener(this);
 		return v;
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		assister.bindService();
-		loadImage();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		assister.unbindService();
-	}
-
-	private void loadImage() {
-		if (isResumed()) {
-			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getActivity());
-			String imageUrl = p.getString(ZGPreferenceActivity.KEY_HOST, "") + item.getRelativeImagePath();
-			WebRequest wr = ImageProcessor.getDefaultImageRequest(imageUrl);
-			assister.runWebRequest(new ImageProcessor.ImageProcessHandler(imageView, imageUrl), wr, new ImageProcessor());
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.imagezoomfragment_iv_next:
+			imageViewFlipper.showNext();
+			break;
+		case R.id.imagezoomfragment_iv_prev:
+			imageViewFlipper.showPrevious();
+			break;
 		}
 	}
 
-	public void setItem(ZGItem item) {
-		this.item = item;
+	public void setAdapter(Context c, EndlessImageListAdapter adapter) {
+		this.adapter = new EndlessImageListAdapter(c.getApplicationContext(), adapter);
 	}
 }
