@@ -141,10 +141,7 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 
 	@Override
 	public void onClick(View v) {
-		WebRequestBuilder b = new WebRequestBuilder(getActivity());
-		WebRequest wr = b.newItem().addUploadFile(new File[] { new File(getRealPathFromURI(imageUri)) }).build();
-		wr.setReadTimeout(10000);
-		wr.setConnectionTimeout(5000);
+		WebRequest wr = getWebRequestAccordingToUri();
 		assister.runWebRequest(new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -159,6 +156,21 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 				}
 			}
 		}, wr, new ZGItemProcessor());
+	}
+
+	private WebRequest getWebRequestAccordingToUri() {
+		WebRequestBuilder b = new WebRequestBuilder(getActivity());
+		WebRequest wr;
+		if (imageUri.getScheme().contains("http")) {
+			LOGGER.info("Using URL upload (less traffic)");
+			wr = b.newItem().addUploadUrl(new String[] { imageUri.toString() }).build();
+		} else {
+			LOGGER.info("Using binary upload (more traffic)");
+			wr = b.newItem().addUploadFile(new File[] { new File(getRealPathFromURI(imageUri)) }).build();
+		}
+		wr.setReadTimeout(10000);
+		wr.setConnectionTimeout(5000);
+		return wr;
 	}
 
 	private String getRealPathFromURI(Uri contentUri) {
