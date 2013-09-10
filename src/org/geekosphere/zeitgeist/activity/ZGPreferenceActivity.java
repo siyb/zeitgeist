@@ -10,6 +10,7 @@ import com.google.zxing.integration.android.IntentResult;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
@@ -23,13 +24,22 @@ public class ZGPreferenceActivity extends PreferenceActivity implements OnPrefer
 	public static final String KEY_EMAIL = "KEY_EMAIL";
 	public static final String KEY_API_SECRET = "KEY_API_SECRET";
 	public static final String KEY_SCAN_API_SECRET = "KEY_SCAN_API_SECRET";
+	
+	private EditTextPreference hostPreference;
+	private EditTextPreference emailPreference;
+	private EditTextPreference apiSecretPreference;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		addPreferencesFromResource(R.xml.zgpreferenceactivity);
-		Preference scanApiSecret = findPreference(KEY_SCAN_API_SECRET);
-		scanApiSecret.setOnPreferenceClickListener(this);
+		
+		hostPreference = (EditTextPreference) findPreference(KEY_HOST);
+		
+		emailPreference = (EditTextPreference) findPreference(KEY_EMAIL);
+		apiSecretPreference = (EditTextPreference) findPreference(KEY_API_SECRET);
+		findPreference(KEY_SCAN_API_SECRET).setOnPreferenceClickListener(this);
 	}
 	
 
@@ -47,17 +57,14 @@ public class ZGPreferenceActivity extends PreferenceActivity implements OnPrefer
                 String eMail = qrcode.substring(auth_token + 6, qrcode.indexOf('|'));
                 String apiSecret = qrcode.substring(qrcode.indexOf('|') + 1);
                 
-                LOGGER.info("qrcode baseUrl: " + baseUrl);
-                LOGGER.info("qrcode eMail: " + eMail);
-                SharedPreferences prefs = 
-                        PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(KEY_HOST, baseUrl);
-                editor.putString(KEY_EMAIL, eMail);
-                editor.putString(KEY_API_SECRET, apiSecret);
-                editor.commit();
+                LOGGER.debug("qrcode baseUrl: " + baseUrl);
+                LOGGER.debug("qrcode eMail: " + eMail);
+                
+                hostPreference.setText(baseUrl);
+                emailPreference.setText(eMail);
+                apiSecretPreference.setText(apiSecret);
 
-                LOGGER.debug("Successfully changed baseUrl, eMail and apiSecret!");
+                LOGGER.info("Successfully changed baseUrl, eMail and apiSecret!");
             }
             else {
             	LOGGER.info("QR Code with invalid token scanned: " + qrcode);
