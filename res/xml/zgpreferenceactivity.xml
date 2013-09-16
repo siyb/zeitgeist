@@ -5,13 +5,11 @@
         android:key="KEY_HOST"
         android:summary="@string/settingspreferencedialog_summary_address"
         android:title="@string/settingspreferencedialog_title_address" />
-    
     <EditTextPreference
         android:defaultValue=""
         android:key="KEY_EMAIL"
         android:summary="@string/settingspreferencedialog_summary_email"
         android:title="@string/settingspreferencedialog_title_email" />
-    
     <EditTextPreference
         android:defaultValue=""
         android:key="KEY_API_SECRET"

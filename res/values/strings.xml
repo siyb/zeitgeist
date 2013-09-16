@@ -17,6 +17,5 @@
     <string name="zgactivity_selectimage">Select an image to upload</string>
     <string name="mainmenu_search">Search</string>
     <string name="fileuploadfragment_noimagedata">Image could not be shared, no data available!</string>
-    
 
 </resources>
