@@ -3,6 +3,7 @@ package org.geekosphere.zeitgeist.fragment;
 import java.io.File;
 
 import org.geekosphere.zeitgeist.R;
+import org.geekosphere.zeitgeist.broadcastreceiver.LoadingBroadcastReceiver;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -153,11 +155,19 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 
 	@Override
 	public void onClick(View v) {
+		uploadCurrentImage();
+	}
+
+	private void uploadCurrentImage() {
 		WebRequest wr = getWebRequestAccordingToUri();
+		Toast.makeText(getActivity(), R.string.fragment_fileuploadfragment_startingimageupload, Toast.LENGTH_SHORT).show();
+		LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING));
 		assister.runWebRequest(new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				if (msg.what == ZGItemProcessor.ID) {
+					LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
+							new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING_DONE));
 					// TODO: 500 - error
 					int statusCode = msg.getData().getInt(ServiceProcessor.BUNDLE_EXTRA_MESSAGE_HTTPSTATUSCODE);
 					if (msg.arg1 == ServiceProcessor.RETURN_MESSAGE_OK) {

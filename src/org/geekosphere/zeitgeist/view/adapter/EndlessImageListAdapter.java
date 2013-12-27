@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.geekosphere.zeitgeist.R;
-import org.geekosphere.zeitgeist.activity.ZGActivity;
 import org.geekosphere.zeitgeist.activity.ZGPreferenceActivity;
+import org.geekosphere.zeitgeist.broadcastreceiver.LoadingBroadcastReceiver;
 import org.geekosphere.zeitgeist.data.ZGItem;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
@@ -78,7 +78,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected boolean cacheInBackground() throws Exception {
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING));
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING));
 		cachedItem = getNextItem();
 		return cachedItem != null;
 	}
@@ -86,7 +86,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	@Override
 	protected void appendCachedData() {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ZGActivity.INTENT_ACTION_LOADING_DONE));
+		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING_DONE));
 	}
 
 	private Pair<ZGItem, Bitmap> getNextItem() {

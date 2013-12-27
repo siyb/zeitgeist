@@ -1,19 +1,16 @@
 package org.geekosphere.zeitgeist.activity;
 
 import org.geekosphere.zeitgeist.R;
+import org.geekosphere.zeitgeist.broadcastreceiver.LoadingBroadcastReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 import at.diamonddogs.service.net.HttpServiceAssister;
 
@@ -26,19 +23,14 @@ import com.actionbarsherlock.widget.SearchView;
 public class ZGActivity extends SherlockFragmentActivity {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ZGActivity.class);
 
-	public static final String INTENT_ACTION_LOADING = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING";
-	public static final String INTENT_ACTION_LOADING_DONE = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING_DONE";
-
 	public static final int ACTIVITY_REQUEST_UPLOADFILE = 0;
 
-	private LoadingBroadcastReceiver loadingBroadcastReceiver;
 	private HttpServiceAssister assister;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setSupportProgressBarIndeterminateVisibility(false);
 		initializeDefaultSettings();
 		setContentView(R.layout.zgactivity);
 		assister = new HttpServiceAssister(this);
@@ -96,16 +88,14 @@ public class ZGActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		LocalBroadcastManager.getInstance(this).registerReceiver(loadingBroadcastReceiver = new LoadingBroadcastReceiver(),
-				new IntentFilter(INTENT_ACTION_LOADING));
-		LocalBroadcastManager.getInstance(this).registerReceiver(loadingBroadcastReceiver = new LoadingBroadcastReceiver(),
-				new IntentFilter(INTENT_ACTION_LOADING_DONE));
+		LoadingBroadcastReceiver.getInstance().setActivity(this);
 		assister.bindService();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		LoadingBroadcastReceiver.getInstance().setActivity(null);
 		assister.unbindService();
 	}
 
@@ -124,16 +114,4 @@ public class ZGActivity extends SherlockFragmentActivity {
 		// @formatter:on
 	}
 
-	private final class LoadingBroadcastReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (action.equals(INTENT_ACTION_LOADING)) {
-				setSupportProgressBarIndeterminateVisibility(true);
-			} else {
-				setSupportProgressBarIndeterminateVisibility(false);
-			}
-		}
-	}
 }

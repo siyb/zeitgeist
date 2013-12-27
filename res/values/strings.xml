@@ -18,5 +18,6 @@
     <string name="mainmenu_search">Search</string>
     <string name="fileuploadfragment_noimagedata">Image could not be shared, no data available!</string>
     <string name="fragment_fileuploadfragment_couldnotloadimage">Could not load image, please try to use the normal gallery application</string>
+    <string name="fragment_fileuploadfragment_startingimageupload">Starting image upload!</string>
 
 </resources>
