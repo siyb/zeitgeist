@@ -19,7 +19,7 @@ public final class LoadingBroadcastReceiver extends BroadcastReceiver {
 	private SherlockFragmentActivity activity;
 	private AtomicInteger counter = new AtomicInteger(0);
 
-	public static final LoadingBroadcastReceiver getInstance() {
+	public static final synchronized LoadingBroadcastReceiver getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new LoadingBroadcastReceiver();
 		}
