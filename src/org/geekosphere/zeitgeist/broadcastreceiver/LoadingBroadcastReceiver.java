@@ -11,8 +11,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public final class LoadingBroadcastReceiver extends BroadcastReceiver {
-	public static final String INTENT_ACTION_LOADING = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING";
-	public static final String INTENT_ACTION_LOADING_DONE = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING_DONE";
+	private static final String INTENT_ACTION_LOADING = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING";
+	private static final String INTENT_ACTION_LOADING_DONE = "org.geekosphere.zeitgeist.activity.ZGActivity.INTENT_EXTRA_LOADING_DONE";
 
 	public static LoadingBroadcastReceiver INSTANCE;
 
@@ -59,5 +59,13 @@ public final class LoadingBroadcastReceiver extends BroadcastReceiver {
 
 	public final void unregisterReceiver(Context c) {
 		LocalBroadcastManager.getInstance(c).unregisterReceiver(this);
+	}
+
+	public void sendLoadingIntent(Context c) {
+		LocalBroadcastManager.getInstance(c).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING));
+	}
+
+	public void sendLoadingDoneIntent(Context c) {
+		LocalBroadcastManager.getInstance(c).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING_DONE));
 	}
 }

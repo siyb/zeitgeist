@@ -15,11 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +76,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected boolean cacheInBackground() throws Exception {
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING));
+		LoadingBroadcastReceiver.getInstance().sendLoadingIntent(getContext());
 		cachedItem = getNextItem();
 		return cachedItem != null;
 	}
@@ -86,7 +84,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	@Override
 	protected void appendCachedData() {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
-		LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(LoadingBroadcastReceiver.INTENT_ACTION_LOADING_DONE));
+		LoadingBroadcastReceiver.getInstance().sendLoadingDoneIntent(getContext());
 	}
 
 	private Pair<ZGItem, Bitmap> getNextItem() {
