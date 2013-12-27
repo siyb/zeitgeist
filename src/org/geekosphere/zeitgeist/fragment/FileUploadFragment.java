@@ -53,7 +53,7 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fileuploadfragment, container, false);
 		image = (ImageView) v.findViewById(R.id.fileuploadfragment_iv_preview);
-		v.findViewById(R.id.fileuploadfragment_b_upload).setOnClickListener(this);
+		v.findViewById(R.id.fileuploadfragment_ib_upload).setOnClickListener(this);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			image.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		return v;

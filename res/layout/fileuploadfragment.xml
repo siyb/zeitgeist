@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/zg_grey" >
+    android:layout_height="wrap_content"
+    android:background="@color/zg_grey"
+    android:orientation="vertical" >
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/fileuploadfragment_iv_preview"
+        android:scaleType="centerInside"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         />
+
+    <ImageButton
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="10dip"
+        android:layout_alignTop="@+id/fileuploadfragment_iv_preview"
+        android:layout_alignLeft="@+id/fileuploadfragment_iv_preview"
+        android:id="@+id/fileuploadfragment_ib_upload"
+        android:layout_width="wrap_content"
+        android:background="@android:color/transparent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:text="@string/fileuploadfragment_uploadpicture" 
+        android:src="@android:drawable/ic_menu_upload"/>
 
-        <ImageView
-            android:id="@+id/fileuploadfragment_iv_preview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/fileuploadfragment_b_upload"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/fileuploadfragment_uploadpicture" />
-    </LinearLayout>
-
-</ScrollView>
+</RelativeLayout>
