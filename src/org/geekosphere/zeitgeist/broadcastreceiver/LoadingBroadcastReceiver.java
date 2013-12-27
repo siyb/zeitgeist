@@ -36,7 +36,7 @@ public final class LoadingBroadcastReceiver extends BroadcastReceiver {
 		}
 		String action = intent.getAction();
 		if (action.equals(INTENT_ACTION_LOADING)) {
-			if (counter.get() == 1) {
+			if (counter.get() == 0) {
 				activity.setSupportProgressBarIndeterminateVisibility(true);
 			}
 			counter.incrementAndGet();
