@@ -36,15 +36,15 @@ public final class LoadingBroadcastReceiver extends BroadcastReceiver {
 		}
 		String action = intent.getAction();
 		if (action.equals(INTENT_ACTION_LOADING)) {
-			if (counter.get() == 0) {
+			counter.incrementAndGet();
+			if (counter.get() == 1) {
 				activity.setSupportProgressBarIndeterminateVisibility(true);
 			}
-			counter.incrementAndGet();
 		} else {
+			counter.decrementAndGet();
 			if (counter.get() == 0) {
 				activity.setSupportProgressBarIndeterminateVisibility(false);
 			}
-			counter.decrementAndGet();
 		}
 	}
 
