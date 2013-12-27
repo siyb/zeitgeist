@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -97,7 +98,14 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 						getActivity().runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								image.setImageBitmap(getScaledBitmapFromLocalUri());
+								Bitmap previewImage = getScaledBitmapFromLocalUri(getActivity());
+								if (previewImage == null) {
+									Toast.makeText(getActivity(), R.string.fragment_fileuploadfragment_couldnotloadimage, Toast.LENGTH_LONG)
+											.show();
+									getActivity().finish();
+								} else {
+									image.setImageBitmap(previewImage);
+								}
 							}
 						});
 					}
@@ -123,8 +131,12 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 		return scaleImage(src);
 	}
 
-	private Bitmap getScaledBitmapFromLocalUri() {
-		Bitmap src = BitmapFactory.decodeFile(getRealPathFromURI(imageUri));
+	private Bitmap getScaledBitmapFromLocalUri(Context c) {
+		String filePath = getRealPathFromURI(c, imageUri);
+		if (filePath == null) {
+			return null;
+		}
+		Bitmap src = BitmapFactory.decodeFile(filePath);
 		return scaleImage(src);
 	}
 
@@ -166,16 +178,16 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 			wr = b.newItem().addUploadUrl(new String[] { imageUri.toString() }).build();
 		} else {
 			LOGGER.info("Using binary upload (more traffic)");
-			wr = b.newItem().addUploadFile(new File[] { new File(getRealPathFromURI(imageUri)) }).build();
+			wr = b.newItem().addUploadFile(new File[] { new File(getRealPathFromURI(getActivity(), imageUri)) }).build();
 		}
 		wr.setReadTimeout(10000);
 		wr.setConnectionTimeout(5000);
 		return wr;
 	}
 
-	private String getRealPathFromURI(Uri contentUri) {
-		if (imageUri.getScheme().contains("http")) {
-			return ImageProcessor.getImageFileUrl(imageUri.toString(), getActivity());
+	private String getRealPathFromURI(Context c, Uri contentUri) {
+		if (contentUri.getScheme().contains("http")) {
+			return ImageProcessor.getImageFileUrl(contentUri.toString(), getActivity());
 		} else {
 			String[] proj = { MediaStore.Images.Media.DATA };
 			CursorLoader loader = new CursorLoader(getActivity(), contentUri, proj, null, null, null);

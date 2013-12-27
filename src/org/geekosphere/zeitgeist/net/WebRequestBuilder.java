@@ -158,7 +158,7 @@ public class WebRequestBuilder {
 	private WebRequest createDefaultWebRequest() {
 		WebRequest wr = new WebRequest();
 		wr.addHeaderField("Accept", "application/json");
-		
+
 		if (email != null && apiSecret != null && email.length() > 0 && apiSecret.length() > 0) {
 			wr.addHeaderField("X-API-Auth", this.email + "|" + this.apiSecret);
 		}

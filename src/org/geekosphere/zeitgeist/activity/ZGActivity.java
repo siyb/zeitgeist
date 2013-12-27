@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -71,7 +72,13 @@ public class ZGActivity extends SherlockFragmentActivity {
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 
 		try {
-			startActivityForResult(Intent.createChooser(intent, getString(R.string.zgactivity_selectimage)), ACTIVITY_REQUEST_UPLOADFILE);
+			Intent i;
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+				i = Intent.createChooser(intent, getString(R.string.zgactivity_selectimage));
+			} else {
+				i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			}
+			startActivityForResult(i, ACTIVITY_REQUEST_UPLOADFILE);
 		} catch (ActivityNotFoundException ex) {
 			Toast.makeText(this, R.string.zgactivity_couldnothandle, Toast.LENGTH_SHORT).show();
 		}
