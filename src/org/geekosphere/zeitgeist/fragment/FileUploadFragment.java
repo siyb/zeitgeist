@@ -6,6 +6,7 @@ import org.geekosphere.zeitgeist.R;
 import org.geekosphere.zeitgeist.broadcastreceiver.LoadingBroadcastReceiver;
 import org.geekosphere.zeitgeist.net.WebRequestBuilder;
 import org.geekosphere.zeitgeist.processor.ZGItemProcessor;
+import org.geekosphere.zeitgeist.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +123,12 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	}
 
 	private void downloadImage(Uri u) {
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Util.showCentricToast(getActivity(), R.string.fragment_fileuploadfragment_attemptingdownloadfromsource, Toast.LENGTH_SHORT);
+			}
+		});
 		LoadingBroadcastReceiver.getInstance().sendLoadingIntent(getActivity());
 		String url = u.toString();
 		WebRequest wr = ImageProcessor.getDefaultImageRequest(url);
