@@ -10,13 +10,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="ZGApplication"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" android:name="ZGApplication">
+        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
         <activity android:name=".activity.ZGActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,12 +26,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ZGUploadActivity" >
+            <!-- For images -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
+            </intent-filter>
+            <!-- For web URLs -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.ZGPreferenceActivity" />
