@@ -43,11 +43,13 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 	private Uri imageUri;
 	private ImageView image;
 	private HttpServiceAssister assister;
+	private Handler handler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		assister = new HttpServiceAssister(getActivity());
+		handler = new Handler();
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -89,7 +91,7 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 				if (imageUri != null) {
 					if (imageUri.getScheme().contains("http")) {
 						downloadImage(imageUri);
-						getActivity().runOnUiThread(new Runnable() {
+						postSafly(new Runnable() {
 							@Override
 							public void run() {
 								image.setImageBitmap(getScaledBitmapFromFile(ImageProcessor.getImageFileUrl(imageUri.toString(),
@@ -97,7 +99,7 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 							}
 						});
 					} else {
-						getActivity().runOnUiThread(new Runnable() {
+						postSafly(new Runnable() {
 							@Override
 							public void run() {
 								Bitmap previewImage = getScaledBitmapFromLocalUri(getActivity());
@@ -119,11 +121,16 @@ public class FileUploadFragment extends SherlockFragment implements OnClickListe
 				}
 			}
 		}.start();
+	}
 
+	private void postSafly(Runnable r) {
+		if (handler != null && !isDetached() && getActivity() != null) {
+			handler.post(r);
+		}
 	}
 
 	private void downloadImage(Uri u) {
-		getActivity().runOnUiThread(new Runnable() {
+		postSafly(new Runnable() {
 			@Override
 			public void run() {
 				Util.showCentricToast(getActivity(), R.string.fragment_fileuploadfragment_attemptingdownloadfromsource, Toast.LENGTH_SHORT);
