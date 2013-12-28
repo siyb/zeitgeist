@@ -3,6 +3,9 @@ package org.geekosphere.zeitgeist.view.adapter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.geekosphere.zeitgeist.R;
@@ -35,6 +38,7 @@ import com.commonsware.cwac.endless.EndlessAdapter;
 
 public class EndlessImageListAdapter extends EndlessAdapter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EndlessImageListAdapter.class);
+	private static final long INDETERMINATE_PROGRESS_TIMEOUT_POLL_MS = 500;
 
 	private HttpServiceAssister assister;
 	private Pair<ZGItem, Bitmap> cachedItem;
@@ -42,8 +46,13 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	protected final AtomicInteger currentPage = new AtomicInteger(1);
 	protected final AtomicInteger listPointer = new AtomicInteger(0);
+
 	protected List<ZGItem> zgItems;
+
 	private ImageView placeHolderView;
+
+	private final AtomicBoolean currentlyLoadingImage = new AtomicBoolean(false);
+	private Timer timer;
 
 	public EndlessImageListAdapter(Context context) {
 		super(context, new ZGAdapter(context), -1);
@@ -76,15 +85,41 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 
 	@Override
 	protected boolean cacheInBackground() throws Exception {
-		LoadingBroadcastReceiver.getInstance().sendLoadingIntent(getContext());
+		cancelAndRenewIndeterminateProgressTimeout();
 		cachedItem = getNextItem();
 		return cachedItem != null;
+	}
+
+	private void cancelAndRenewIndeterminateProgressTimeout() {
+		if (timer != null) {
+			timer.cancel();
+		} else {
+			LoadingBroadcastReceiver.getInstance().sendLoadingIntent(getContext());
+		}
+		renewTimer();
+	}
+
+	private void renewTimer() {
+		if (timer != null) {
+			timer.cancel();
+		}
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if (currentlyLoadingImage.get()) {
+					renewTimer();
+				} else {
+					timer = null;
+					LoadingBroadcastReceiver.getInstance().sendLoadingDoneIntent(getContext());
+				}
+			}
+		}, INDETERMINATE_PROGRESS_TIMEOUT_POLL_MS);
 	}
 
 	@Override
 	protected void appendCachedData() {
 		((ZGAdapter) getWrappedAdapter()).add(cachedItem);
-		LoadingBroadcastReceiver.getInstance().sendLoadingDoneIntent(getContext());
 	}
 
 	private Pair<ZGItem, Bitmap> getNextItem() {
@@ -108,7 +143,9 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			imageWr.setUrl(url);
 			imageWr.setProcessorId(ImageProcessor.ID);
 			imageWr.setCacheTime(CacheInformation.CACHE_FOREVER);
+			currentlyLoadingImage.set(true);
 			Bitmap b = (Bitmap) ((WebRequestReturnContainer) assister.runSynchronousWebRequest(imageWr, new ImageProcessor())).getPayload();
+			currentlyLoadingImage.set(false);
 			Pair<ZGItem, Bitmap> returnPair = new Pair<ZGItem, Bitmap>(item, b);
 
 			return returnPair;
@@ -119,7 +156,7 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 	}
 
 	private void populateZGItemsIfNecessary() {
-		if (zgItems == null || listPointer.get() == (zgItems.size() - 1)) {
+		if (zgItems == null || lastImageLoaded()) {
 			WebRequestBuilder wrb = new WebRequestBuilder(getContext());
 			listPointer.set(0);
 			WebRequest wr;
@@ -132,6 +169,10 @@ public class EndlessImageListAdapter extends EndlessAdapter {
 			zgItems = Collections.synchronizedList(Arrays.asList(items));
 			LOGGER.info("getNextItem: got " + zgItems.size());
 		}
+	}
+
+	private boolean lastImageLoaded() {
+		return (listPointer.get() == (zgItems.size() - 1));
 	}
 
 	public Pair<ZGItem, Bitmap> getZGItem(int position) {

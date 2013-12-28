@@ -52,6 +52,10 @@ public final class LoadingBroadcastReceiver extends BroadcastReceiver {
 		this.activity = activity;
 	}
 
+	public boolean isLoading() {
+		return counter.get() != 0;
+	}
+
 	public final void registerReceiver(Context c) {
 		LocalBroadcastManager.getInstance(c).registerReceiver(this, new IntentFilter(LoadingBroadcastReceiver.INTENT_ACTION_LOADING));
 		LocalBroadcastManager.getInstance(c).registerReceiver(this, new IntentFilter(LoadingBroadcastReceiver.INTENT_ACTION_LOADING_DONE));
